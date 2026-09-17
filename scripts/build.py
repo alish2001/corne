@@ -27,7 +27,8 @@ def entries(mode="all"):
 
 def verify(build, entry):
     config = (build / "zephyr/.config").read_text()
-    dts = (build / "zephyr/zephyr.dts").read_text()
+    # Binding defaults are materialized in the generated header, not zephyr.dts.
+    dt_header = (build / "zephyr/include/generated/zephyr/devicetree_generated.h").read_text()
     link_map = (build / "zephyr/zmk.map").read_text()
     values = dict(re.findall(r"^(CONFIG_\w+)=(.*)$", config, re.MULTILINE))
     assert values["CONFIG_BOARD_REVISION"] == '"2.0.0"'
@@ -42,8 +43,9 @@ def verify(build, entry):
     assert values.get("CONFIG_ZMK_STUDIO_LOCKING", "n") == "n"
     assert values["CONFIG_ZMK_KSCAN_DEBOUNCE_PRESS_MS"] == "-1"
     assert values["CONFIG_ZMK_KSCAN_DEBOUNCE_RELEASE_MS"] == "-1"
-    assert re.search(r"debounce-press-ms = < (?:0x)?5 >;", dts)
-    assert re.search(r"debounce-release-ms = < (?:0x)?5 >;", dts)
+    for edge in ("press", "release"):
+        assert re.search(rf"#define DT_N_S_kscan_P_debounce_{edge}_ms\s+5\s*$",
+                         dt_header, re.MULTILINE), f"effective {edge} debounce"
     assert values.get("CONFIG_ZMK_SPLIT_ROLE_CENTRAL", "n") == ("y" if central else "n")
     if central:
         assert values["CONFIG_ZMK_KEYBOARD_NAME"] == '"Corne"'
@@ -99,12 +101,16 @@ def main():
         path = build / "zephyr" / source
         if path.exists():
             shutil.copy2(path, output / source.lstrip("."))
+    header = build / "zephyr/include/generated/zephyr/devicetree_generated.h"
+    if header.exists():
+        shutil.copy2(header, output / header.name)
     if rc:
         raise SystemExit(rc)
     verify(build, entry)
     uf2 = output / f"{args.artifact}.uf2"
     shutil.copy2(build / "zephyr/zmk.uf2", uf2)
-    frozen = subprocess.check_output(["west", "manifest", "--freeze"], cwd=workspace, text=True)
+    frozen = subprocess.check_output(["west", "manifest", "--freeze", "--active-only"],
+                                     cwd=workspace, text=True)
     (output / "west-frozen.yml").write_text(frozen)
     (output / "SHA256SUMS").write_text(f"{hashlib.sha256(uf2.read_bytes()).hexdigest()}  {uf2.name}\n")
     metadata = {
