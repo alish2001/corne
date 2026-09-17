@@ -1,5 +1,12 @@
 # BLE Latency Investigation
 
+> Historical pre-migration notes, superseded by [the migration audit](docs/migration.md)
+> and [the diagnostic guide](docs/diagnostics.md). Do not apply the tuning block
+> below to the modern baseline. The 1/10 ms debounce endorsement, battery-life
+> estimates, and attribution of symptoms to connection intervals were hypotheses,
+> not established measurements. Firmware uptime and host clock timestamps cannot
+> be directly subtracted as proposed below. Use correlated events and host traces.
+
 Working doc for measuring and reducing Bluetooth latency on this Corne (nice!nano v2 split, aluminum case, macOS host).
 
 ## Current config audit (`config/corne.conf`)
