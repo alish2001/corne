@@ -1,5 +1,72 @@
-on: [push, pull_request, workflow_dispatch]
+name: Firmware
+on:
+  push:
+    branches: [master, 'codex/**']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Firmware matrix
+        type: choice
+        options: [all, normal, diagnostic]
+        default: all
+
+permissions:
+  contents: read
+
+# Same west init/update/build recipe as ZMK's build-user-config.yml at
+# 9ebbeff0a8b69a42f14aec022cdf16c7a107b9e0, with a frozen container and
+# .config, ELF/map, logs, checksums and dependency manifest retained for diagnosis.
+env:
+  BUILD_IMAGE: zmkfirmware/zmk-build-arm@sha256:edb1c953438c6f720ddb79c3762f3972013b7fbbaf4fff3592fc869983e7afc5
 
 jobs:
+  matrix:
+    runs-on: ubuntu-24.04
+    container: zmkfirmware/zmk-build-arm@sha256:edb1c953438c6f720ddb79c3762f3972013b7fbbaf4fff3592fc869983e7afc5
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - id: matrix
+        env:
+          MODE: ${{ inputs.mode || 'all' }}
+        run: echo "matrix=$(python3 scripts/build.py --matrix "$MODE")" >> "$GITHUB_OUTPUT"
+
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@9ebbeff0a8b69a42f14aec022cdf16c7a107b9e0
+    needs: matrix
+    runs-on: ubuntu-24.04
+    container: zmkfirmware/zmk-build-arm@sha256:edb1c953438c6f720ddb79c3762f3972013b7fbbaf4fff3592fc869983e7afc5
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+    name: ${{ matrix.artifact }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Initialize pinned workspace
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/west/config"
+          cp -R config/. "$RUNNER_TEMP/west/config/"
+          cd "$RUNNER_TEMP/west"
+          west init -l config
+          west update --fetch-opt=--filter=tree:0
+          west zephyr-export
+      - name: Build and verify
+        env:
+          ARTIFACT: ${{ matrix.artifact }}
+        run: python3 scripts/build.py "$ARTIFACT" --workspace "$RUNNER_TEMP/west"
+      - name: Record toolchain image
+        if: always()
+        env:
+          ARTIFACT: ${{ matrix.artifact }}
+        run: |
+          mkdir -p "artifacts/$ARTIFACT"
+          echo "$BUILD_IMAGE" > "artifacts/$ARTIFACT/build-image.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: ${{ matrix.artifact }}
+          path: artifacts/${{ matrix.artifact }}/
+          retention-days: 90
+          if-no-files-found: error

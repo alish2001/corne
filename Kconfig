@@ -1,0 +1,7 @@
+config CORNE_DIAGNOSTICS
+    bool "Corne input and BLE diagnostic observers"
+    depends on ZMK_BLE && ZMK_SPLIT
+    default n
+    help
+      Log input events, queue failures, HID and split notification submissions,
+      and connection state. No protocol, retry, or connection preference changes.

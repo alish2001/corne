@@ -1,0 +1,6 @@
+name: corne_diagnostics
+build:
+  cmake: .
+  kconfig: Kconfig
+  settings:
+    snippet_root: .

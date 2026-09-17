@@ -1,0 +1,13 @@
+# Same hardware and keymap; USB logs and read-only instrumentation are added.
+---
+include:
+  - board: nice_nano@2.0.0//zmk
+    shield: corne_left nice_view_adapter nice_view
+    snippet: studio-rpc-usb-uart zmk-usb-logging corne-diagnostics
+    artifact-name: corne-left-diagnostic
+    cmake-args: -DCONFIG_ZMK_BLE_THREAD_STACK_SIZE=2048
+  - board: nice_nano@2.0.0//zmk
+    shield: corne_right nice_view_adapter nice_view
+    snippet: zmk-usb-logging corne-diagnostics
+    artifact-name: corne-right-diagnostic
+    cmake-args: -DCONFIG_ZMK_SPLIT_BLE_PERIPHERAL_STACK_SIZE=2048
