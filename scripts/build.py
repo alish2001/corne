@@ -77,6 +77,11 @@ def main():
     if len(matches) != 1 or args.workspace is None:
         parser.error("Supply an artifact name from build*.yaml and --workspace")
     entry = matches[0]
+    # The container runs as a different UID from the checkout action. Trust only
+    # this explicitly selected repository for this one read, not all directories.
+    config_commit = subprocess.check_output(
+        ["git", "-c", f"safe.directory={REPO}", "rev-parse", "HEAD"],
+        cwd=REPO, text=True).strip()
     workspace = args.workspace.resolve()
     build = REPO / "build" / args.artifact
     output = args.output.resolve() / args.artifact
@@ -114,7 +119,7 @@ def main():
     (output / "west-frozen.yml").write_text(frozen)
     (output / "SHA256SUMS").write_text(f"{hashlib.sha256(uf2.read_bytes()).hexdigest()}  {uf2.name}\n")
     metadata = {
-        "config_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(),
+        "config_commit": config_commit,
         "keymap_sha256": hashlib.sha256((REPO / "config/corne.keymap").read_bytes()).hexdigest(),
         "zephyr_version": (workspace / "zephyr/VERSION").read_text(),
         "verification": "passed",
