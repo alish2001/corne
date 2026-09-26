@@ -1,5 +1,10 @@
 # Windows pairing investigation — 2026-09-25
 
+The Windows test branch and active build mode were retired on 2026-09-26 at the
+user's request. The complete experiment remains recoverable at tag
+`archive/windows-ble-compat-2026-09-26`; the notes below describe that archived
+version. Current firmware development uses the normal radio configuration.
+
 ## Reported resolution: Intel Windows driver update
 
 The user reports that installing **Intel Wireless Bluetooth 24.70.0.4** restored
@@ -44,7 +49,7 @@ ZMK's [connection troubleshooting guide](https://zmk.dev/docs/troubleshooting/co
 specifically lists disabling 2M PHY as a workaround for some Windows Intel/Realtek
 adapter firmware versions. This is a hypothesis to test, not a confirmed fix.
 
-`build-windows.yaml` adds two **left/central-only** images:
+The archived `build-windows.yaml` added two **left/central-only** images:
 
 - `corne-left-windows-1m.uf2`: normal baseline plus `CONFIG_BT_CTLR_PHY_2M=n`.
 - `corne-left-windows-1m-diagnostic.uf2`: diagnostic baseline plus that same setting.
@@ -64,8 +69,9 @@ the workflow's `all` mode still builds only those five.
 Build explicitly:
 
 ```sh
-gh workflow run build.yml --ref codex/windows-ble-compat -f mode=windows
-# Or use the existing pinned local west workspace:
+gh workflow run build.yml --ref archive/windows-ble-compat-2026-09-26 -f mode=windows
+# For a local historical rebuild, first check out the archived tag:
+git switch --detach archive/windows-ble-compat-2026-09-26
 python3 scripts/build.py corne-left-windows-1m --workspace /path/to/west
 ```
 

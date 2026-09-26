@@ -20,12 +20,9 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def entries(mode="all"):
-    paths = {"normal": "build.yaml", "diagnostic": "build-diagnostic.yaml",
-             "windows": "build-windows.yaml"}
-    # "all" remains the five baseline targets; compatibility tests are opt-in.
-    selected = ("normal", "diagnostic") if mode == "all" else (mode,)
-    return [entry for key in selected
-            for entry in yaml.safe_load((REPO / paths[key]).read_text())["include"]]
+    paths = {"normal": "build.yaml", "diagnostic": "build-diagnostic.yaml"}
+    return [entry for key, path in paths.items() if mode in ("all", key)
+            for entry in yaml.safe_load((REPO / path).read_text())["include"]]
 
 
 def verify(build, entry):
@@ -40,9 +37,7 @@ def verify(build, entry):
         assert values["CONFIG_ZMK_SETTINGS_RESET_ON_START"] == "y"
         return
     diagnostic = entry["artifact-name"].endswith("diagnostic")
-    windows_1m = "-windows-1m" in entry["artifact-name"]
     central = "corne_left" in entry["shield"]
-    assert values.get("CONFIG_BT_CTLR_PHY_2M", "n") == ("n" if windows_1m else "y")
     for key in ("BT_CTLR_TX_PWR_PLUS_8", "ZMK_DISPLAY", "ZMK_STUDIO", "NVS"):
         assert values[f"CONFIG_{key}"] == "y", key
     assert values.get("CONFIG_ZMK_STUDIO_LOCKING", "n") == "n"
@@ -71,14 +66,14 @@ def verify(build, entry):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("artifact", nargs="?")
-    parser.add_argument("--matrix", choices=("normal", "diagnostic", "all", "windows"))
+    parser.add_argument("--matrix", choices=("normal", "diagnostic", "all"))
     parser.add_argument("--workspace", type=Path)
     parser.add_argument("--output", type=Path, default=REPO / "artifacts")
     args = parser.parse_args()
     if args.matrix:
         print(json.dumps({"include": [{"artifact": e["artifact-name"]} for e in entries(args.matrix)]}))
         return
-    matches = [e for e in entries() + entries("windows") if e["artifact-name"] == args.artifact]
+    matches = [e for e in entries() if e["artifact-name"] == args.artifact]
     if len(matches) != 1 or args.workspace is None:
         parser.error("Supply an artifact name from build*.yaml and --workspace")
     entry = matches[0]

@@ -10,7 +10,8 @@ The modern baseline pins **ZMK `9ebbeff0a8b69a42f14aec022cdf16c7a107b9e0`** and
 
 - [Migration audit, known limitations and test plan](docs/migration.md)
 - [Diagnostic build and release-tracing guide](docs/diagnostics.md)
-- [Optional Intel/Windows pairing experiment](docs/windows-pairing.md)
+- [Resolved Windows pairing investigation](docs/windows-pairing.md)
+- [Gaming layout draft, awaiting finalization](docs/gaming-layout.md)
 - Rollback tag: **`zmk-v0.3-known-good`**, original config commit `1fa9653`.
 
 ## Build
