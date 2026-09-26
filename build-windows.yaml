@@ -1,0 +1,14 @@
+# Optional Windows pairing experiment. Baseline build.yaml remains unchanged.
+# The central's 1M-only capability also applies to its link to the right half.
+---
+include:
+  - board: nice_nano@2.0.0//zmk
+    shield: corne_left nice_view_adapter nice_view
+    snippet: studio-rpc-usb-uart
+    artifact-name: corne-left-windows-1m
+    cmake-args: -DCONFIG_BT_CTLR_PHY_2M=n
+  - board: nice_nano@2.0.0//zmk
+    shield: corne_left nice_view_adapter nice_view
+    snippet: studio-rpc-usb-uart zmk-usb-logging corne-diagnostics
+    artifact-name: corne-left-windows-1m-diagnostic
+    cmake-args: -DCONFIG_BT_CTLR_PHY_2M=n -DCONFIG_ZMK_BLE_THREAD_STACK_SIZE=2048
