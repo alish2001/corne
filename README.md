@@ -11,19 +11,19 @@ The modern baseline pins **ZMK `9ebbeff0a8b69a42f14aec022cdf16c7a107b9e0`** and
 - [Migration audit, known limitations and test plan](docs/migration.md)
 - [Diagnostic build and release-tracing guide](docs/diagnostics.md)
 - [Resolved Windows pairing investigation](docs/windows-pairing.md)
-- [Gaming layout draft, awaiting finalization](docs/gaming-layout.md)
+- [Gaming layout, mode shortcuts and flashing instructions](docs/gaming-layout.md)
 - Rollback tag: **`zmk-v0.3-known-good`**, original config commit `1fa9653`.
 
 ## Build
 
-Push the migration branch to build all five targets, or use the commands below to
+Push the gaming branch to build all five targets, or use the commands below to
 select `normal` or `diagnostic`. After merging, these choices are also available
 under **Actions → Firmware → Run workflow**:
 
 ```sh
-gh workflow run build.yml --ref codex/zmk-main-baseline -f mode=normal
-gh workflow run build.yml --ref codex/zmk-main-baseline -f mode=diagnostic
-gh run list --branch codex/zmk-main-baseline
+gh workflow run build.yml --ref codex/gaming-layout -f mode=normal
+gh workflow run build.yml --ref codex/gaming-layout -f mode=diagnostic
+gh run list --branch codex/gaming-layout
 gh run download RUN_ID --dir artifacts/RUN_ID
 ```
 

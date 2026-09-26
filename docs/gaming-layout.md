@@ -1,15 +1,15 @@
-# Gaming layout draft — awaiting finalization
+# Gaming layout
 
-This document and the conversation diagram are a proposal. `config/corne.keymap`
-is still unchanged; no gaming firmware has been built or flashed. The next firmware
-update will be made after the user finalizes the layout.
+Implemented in `config/corne.keymap` after layout approval. The four existing
+layers retain their bindings; the three reserved slots now contain Gaming,
+Game Fn and Modes.
 
 ## Play layer
 
 Preserve the entire right-hand **finger-key** arrangement from the existing Base
 layer, including all punctuation. In particular I/O/P stay on the top row, J/K
-stay on the middle row, and M stays on the bottom row. Right thumbs retain the
-previous gaming proposal's Alt / Enter / Exit arrangement pending review.
+stay on the middle row, and M stays on the bottom row. Right thumbs are
+Alt / Enter / Exit.
 
 ```text
 LEFT                                      RIGHT
@@ -29,6 +29,8 @@ current bindings; the firmware sends ordinary keys rather than action macros.
 Keep WASD, Ctrl, Shift and Space stable while Fn is held. Weapon numbers remain
 on the left without taking the mouse hand away. The right becomes a number/menu
 utility area; its arrow positions match the existing Raise layer's H/J/K/L row.
+Hold the left Fn thumb, then hold physical F for the weapon wheel: this sends
+Left Alt without F. The right Alt thumb is a duplicate of that modifier.
 
 ```text
 LEFT                                      RIGHT
@@ -52,7 +54,7 @@ with `if-layers = <1 2>` activating the Modes layer, and `&to` bindings selectin
 Base/Numpad/Gaming. This gives time to hold the two thumbs and then choose the
 mode, rather than requiring three key presses inside a combo timeout.
 
-Planned layer IDs, retaining the four existing layers:
+Layer IDs, retaining the four existing layers:
 
 | ID | Layer | Activation |
 | --- | --- | --- |
@@ -64,21 +66,46 @@ Planned layer IDs, retaining the four existing layers:
 | 5 | Game Fn | Gaming outer left thumb, held |
 | 6 | Modes | Conditional on Lower + Raise |
 
-This uses all three currently reserved slots. Unassigned Modes keys should emit
+This uses all three formerly reserved slots. Unassigned Modes keys emit
 nothing, so this menu cannot accidentally reach the Raise layer's BT_CLR action.
-Keep release handling for the two layer keys intact.
+ZMK routes releases using the layer state captured at each key's press, so the
+two held layer keys release their original momentary-layer behaviors even after
+selecting a locked mode. Release both thumbs before starting to play.
 
 In Gaming, the former Lower key is Shift, so the normal Lower+Raise entry chord
 is not active there. **Fn+Esc** or the right outer **Exit** thumb returns to Base;
 then the user can select another locked mode. The existing Numpad layer retains
 access to the normal Lower/ Raise keys through its transparent thumb bindings.
-No persistent boot-mode change is proposed.
+Power cycling returns to Base typing.
 
-## Implementation boundary
+## Flashing and Studio
 
-After finalization: edit the keymap, build normal left/right plus relevant
-diagnostic targets, verify the layer transitions, and publish the matching UF2s.
-Keep the currently working ZMK/Zephyr pins, +8 dBm, normal Bluetooth settings and
-5/5 ms debounce. Do not reintroduce the archived Windows compatibility setting.
-If saved Studio bindings exist, coordinate their preservation/application rather
-than assuming a newly compiled keymap automatically overrides them.
+Use the normal left and right images from the same gaming build. Connect each
+half over USB, double-tap its reset button to open its bootloader drive, and copy
+the matching `.uf2` to that drive. It will reboot automatically. This update
+keeps the working ZMK/Zephyr pins, +8 dBm, normal Bluetooth settings and 5/5 ms
+debounce. It does not include the retired Windows compatibility experiment.
+
+If you have previously saved changes in ZMK Studio, record those custom bindings
+before proceeding. Saved Studio settings can override the compiled keymap and
+hide the new layers. After flashing, connect the left half to
+[ZMK Studio](https://zmk.studio/) and use **Restore Stock Settings** to load this
+firmware's layout, then reapply any custom edits you recorded. See the
+[upstream explanation](https://zmk.dev/docs/features/studio#keymap-changes).
+Keep the layer order shown above so Modes has priority over Lower and Raise.
+The separate settings-reset UF2 is not needed for this layout update.
+
+## First-use check
+
+- From Base, hold Lower + Raise and tap G; release both thumbs. The display
+  should show Gaming. Verify the former Enter thumb now jumps (Space) and the
+  former Lower thumb sends Shift.
+- Hold the outer left Fn thumb: Q/E/R/T should send 1/2/3/4, F should hold Alt,
+  and WASD/Shift/Space should remain available. Release all keys and verify
+  movement and modifiers stop normally.
+- Fn + Esc, or the outer right thumb, returns to Base. Check normal typing.
+- Lower + Raise + N enters Numpad. From Numpad, Lower + Raise + Esc returns
+  to Base. Lower + Raise + G should also switch directly from Numpad to Gaming.
+
+The build and compiled configuration can be checked before flashing; physical
+key behavior and in-game bindings still need this first-use check on the keyboard.

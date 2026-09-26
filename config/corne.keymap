@@ -8,7 +8,24 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
 
+#define BASE 0
+#define LOWER 1
+#define RAISE 2
+#define NUMPAD 3
+#define GAMING 4
+#define GAME_FN 5
+#define MODES 6
+
 / {
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+
+        mode_selector {
+            if-layers = <LOWER RAISE>;
+            then-layer = <MODES>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -70,10 +87,38 @@
             >;
         };
 
-        extra_1 { status = "reserved"; };
+        gaming_layer {
+            display-name = "Gaming";
+            bindings = <
+&kp ESCAPE        &kp Q  &kp W  &kp E  &kp R  &kp T       &kp Y         &kp U      &kp I      &kp O    &kp P     &kp BSPC
+&kp TAB           &kp A  &kp S  &kp D  &kp F  &kp G       &kp H         &kp J      &kp K      &kp L    &kp SEMI  &kp APOS
+&kp LEFT_CONTROL  &kp Z  &kp X  &kp C  &kp V  &kp B       &kp N         &kp M      &kp COMMA  &kp DOT  &kp FSLH  &kp RIGHT_SHIFT
+                              &mo GAME_FN  &kp LEFT_SHIFT  &kp SPACE    &kp LEFT_ALT  &kp ENTER  &to BASE
+            >;
+        };
 
-        extra_2 { status = "reserved"; };
+        game_fn_layer {
+            // Keep movement, sprint and jump available while holding Fn.
+            // Fn + physical F sends Alt for the weapon wheel, with no F keypress.
+            display-name = "Game Fn";
+            bindings = <
+&to BASE          &kp N1  &kp W  &kp N2  &kp N3        &kp N4    &kp N1    &kp N2    &kp N3  &kp N4     &kp N5  &kp F5
+&kp CAPSLOCK      &kp A   &kp S  &kp D   &kp LEFT_ALT  &kp H     &kp LEFT  &kp DOWN  &kp UP  &kp RIGHT  &kp F1  &kp DELETE
+&kp LEFT_CONTROL  &kp O   &kp M  &kp J   &kp N         &kp P     &kp N6    &kp N7    &kp N8  &kp N9     &kp N0  &kp F9
+                                &mo GAME_FN  &kp LEFT_SHIFT  &kp SPACE    &kp LEFT_ALT  &kp ENTER  &to BASE
+            >;
+        };
 
-        extra_3 { status = "reserved"; };
+        modes_layer {
+            // Lower + Raise: G = Gaming, N = Numpad, Esc = Base.
+            // Block other keys, including the underlying BT_CLR position.
+            display-name = "Modes";
+            bindings = <
+&to BASE  &none  &none  &none  &none  &none         &none       &none  &none  &none  &none  &none
+&none     &none  &none  &none  &none  &to GAMING    &none       &none  &none  &none  &none  &none
+&none     &none  &none  &none  &none  &none         &to NUMPAD  &none  &none  &none  &none  &none
+                       &none  &trans  &none        &none       &trans  &none
+            >;
+        };
     };
 };
