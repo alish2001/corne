@@ -11,6 +11,8 @@ credible hypothesis; successful iPhone pairing does not rule it out. No successf
 Windows pairing or confirmed cause has yet been observed for the new build.
 The motherboard is reported as an ASUS ROG Crosshair X670-series board. The
 experiment tests interoperability, not whether this hardware is powerful enough.
+See the [subagent-assisted regression review](windows-regression-review.md) for
+specific upstream reports and verified differences between the pinned stacks.
 
 ## Separate the icon from the pairing failure
 
