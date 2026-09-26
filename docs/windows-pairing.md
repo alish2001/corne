@@ -4,7 +4,13 @@ Windows shows Corne but rejects pairing with “Try connecting your device again
 The user cleared the Omarchy slot on the same dual-boot Bluetooth adapter and
 successfully paired an iPhone using the modern firmware. The Windows adapter is
 identified as Intel Wireless Bluetooth; exact model/driver and Windows version
-are not yet known. A Windows-specific stack/adapter regression remains possible.
+are not yet known. The user reports that the previous firmware paired with this
+same Windows PC, and that Device Manager shows no hidden Corne entry after normal
+removal. A Windows-specific firmware compatibility regression is therefore a
+credible hypothesis; successful iPhone pairing does not rule it out. No successful
+Windows pairing or confirmed cause has yet been observed for the new build.
+The motherboard is reported as an ASUS ROG Crosshair X670-series board. The
+experiment tests interoperability, not whether this hardware is powerful enough.
 
 ## Separate the icon from the pairing failure
 
@@ -44,6 +50,22 @@ gh workflow run build.yml --ref codex/windows-ble-compat -f mode=windows
 # Or use the existing pinned local west workspace:
 python3 scripts/build.py corne-left-windows-1m --workspace /path/to/west
 ```
+
+Both images passed [Actions run 36210445821](https://github.com/alish2001/corne/actions/runs/36210445821)
+at firmware-input commit `9569594`. Compared with the corresponding baseline
+normal/diagnostic artifacts, the **only resolved Kconfig change** is
+`CONFIG_BT_CTLR_PHY_2M=y` to `n`. All 56 frozen dependency revisions and the keymap
+hash match the baseline. UF2 block structure, nRF52840 family, application flash
+address range and SHA256 checksums were verified. The known KSCAN and nice!view
+NONE-state warnings remain; there are no new compiler warnings.
+
+| Image | Flash | RAM | SHA256 |
+| --- | --- | --- | --- |
+| Normal compatibility | 425492 B | 105930 B | `2f65265198b6f864e917a71d5cab9e0a1900454e7578e0fd9927992f347d060b` |
+| Diagnostic compatibility | 521016 B | 152754 B | `22efbbcd746b7fe012ed1e10d647b0ab2e14a975a8c6c28f7a4bc7eded379a47` |
+
+These are build/inspection results. Windows pairing on the user's PC still needs
+to be tested; a successful build does not establish a pairing fix.
 
 ## Controlled test
 
