@@ -1,5 +1,21 @@
 # Windows pairing investigation — 2026-09-25
 
+## Reported resolution: Intel Windows driver update
+
+The user reports that installing **Intel Wireless Bluetooth 24.70.0.4** restored
+Windows pairing. The same adapter already worked under Omarchy, and the Intel
+download was newer than the driver Windows Update/Device Manager had offered.
+This supports a Windows driver/firmware interoperability explanation. Checking
+Intel's vendor driver should have preceded firmware compatibility experiments.
+
+The precise packet-level failure was not captured. The optional 1M build is not
+established as the fix, and the exact image running at the successful attempt was
+not independently inspected. If normal modern firmware pairs with the updated
+driver, retain it; no compatibility-mode experiment is needed. The investigation
+and optional builds below are preserved as history, not outstanding instructions.
+
+## Original report
+
 Windows shows Corne but rejects pairing with “Try connecting your device again.”
 The user cleared the Omarchy slot on the same dual-boot Bluetooth adapter and
 successfully paired an iPhone using the modern firmware. The Windows adapter is
@@ -7,8 +23,8 @@ identified as Intel Wireless Bluetooth; exact model/driver and Windows version
 are not yet known. The user reports that the previous firmware paired with this
 same Windows PC, and that Device Manager shows no hidden Corne entry after normal
 removal. A Windows-specific firmware compatibility regression is therefore a
-credible hypothesis; successful iPhone pairing does not rule it out. No successful
-Windows pairing or confirmed cause has yet been observed for the new build.
+credible hypothesis; successful iPhone pairing did not rule it out. At that stage,
+the Windows pairing failure had not yet been resolved.
 The motherboard is reported as an ASUS ROG Crosshair X670-series board. The
 experiment tests interoperability, not whether this hardware is powerful enough.
 See the [subagent-assisted regression review](windows-regression-review.md) for
@@ -66,8 +82,8 @@ NONE-state warnings remain; there are no new compiler warnings.
 | Normal compatibility | 425492 B | 105930 B | `2f65265198b6f864e917a71d5cab9e0a1900454e7578e0fd9927992f347d060b` |
 | Diagnostic compatibility | 521016 B | 152754 B | `22efbbcd746b7fe012ed1e10d647b0ab2e14a975a8c6c28f7a4bc7eded379a47` |
 
-These are build/inspection results. Windows pairing on the user's PC still needs
-to be tested; a successful build does not establish a pairing fix.
+These are build/inspection results, not evidence that the optional radio-mode
+change fixed pairing. The later successful connection followed the driver update.
 
 ## Controlled test
 

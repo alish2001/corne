@@ -97,6 +97,8 @@ do not calibrate the percentage from USB-connected readings.
 - **Controller prepare-pipeline overflow fix:** Zephyr `10ba6d0cb38b`, the pin itself.
   Confirmed relevant to nRF52840 split central lockups; the reporter confirmed
   improvement in [#3480](https://github.com/zmkfirmware/zmk/issues/3480).
+  This fixes a failure in the newer stack; maintainers note that Zephyr 3.5 did
+  not exhibit that crash. It is not evidence that v0.3 had the same bug.
 - **Peripheral assertion during connection update plus flash operations:**
   Zephyr `b2aee46d1685`, included in the pin; see
   [commit](https://github.com/zmkfirmware/zephyr/commit/b2aee46d168593c7fb37edb1b663808f2cb851cd).

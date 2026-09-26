@@ -1,5 +1,21 @@
 # Windows/Intel regression review — 2026-09-25
 
+## Outcome reported after this review
+
+Updating the Windows Intel Bluetooth driver to **24.70.0.4** restored pairing,
+according to the user. Omarchy already worked on the same adapter. This narrows
+the practical resolution to the Windows driver update; it does not confirm the
+specific negotiation-collision or key-size hypotheses investigated below.
+The exact running firmware image at success was not independently inspected.
+No successful result is attributed to the optional 1M compatibility build.
+
+Prioritize the normal modern firmware with the updated driver if it now works.
+The remaining investigation is historical and only needs reopening if failures
+return. The original investigation should have prioritized the vendor Windows
+driver before additional firmware experiments.
+
+## Investigation before the driver update
+
 A requested research subagent reviewed upstream ZMK/Zephyr issues, and the primary
 agent cross-checked the strongest findings against the exact source pins and saved
 build configurations. **A concrete compatibility mechanism was found; the cause
@@ -118,4 +134,4 @@ namespaces and must not be interpreted interchangeably.
 
 No upstream patch was applied and no additional radio/security settings were
 changed during this review. The Windows compatibility image is built and checked,
-but no successful hardware pairing result has been reported yet.
+but was not established as a fix. The later driver-update outcome is recorded above.
