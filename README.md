@@ -12,6 +12,7 @@ The modern baseline pins **ZMK `9ebbeff0a8b69a42f14aec022cdf16c7a107b9e0`** and
 - [Diagnostic build and release-tracing guide](docs/diagnostics.md)
 - [Resolved Windows pairing investigation](docs/windows-pairing.md)
 - [Gaming layout, mode shortcuts and flashing instructions](docs/gaming-layout.md)
+- [Verified gaming firmware build and downloads](docs/gaming-build-results.md)
 - Rollback tag: **`zmk-v0.3-known-good`**, original config commit `1fa9653`.
 
 ## Build

@@ -1,5 +1,9 @@
 # Verified firmware artifacts
 
+For the September 26 gaming update, see
+[gaming-build-results.md](gaming-build-results.md). This page records the
+original migration build, before the gaming layers were added.
+
 Final [GitHub Actions run 35176314599](https://github.com/alish2001/corne/actions/runs/35176314599)
 passed all five targets. Tested firmware/config commit:
 `211f3b996cb62d687b383ec7af2699336b4d3b1e`. The following documentation-only commit
