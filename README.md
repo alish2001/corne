@@ -15,6 +15,18 @@ The modern baseline pins **ZMK `9ebbeff0a8b69a42f14aec022cdf16c7a107b9e0`** and
 - [Verified gaming firmware build and downloads](docs/gaming-build-results.md)
 - Rollback tag: **`zmk-v0.3-known-good`**, original config commit `1fa9653`.
 
+## App switching
+
+Hold **Lower**, then tap the physical **Tab** key to send **Command + Tab** on
+macOS (`&kp LG(TAB)`). Command releases with Tab, so each tap switches to the
+previous application. Ordinary Tab on Base and the gaming controls keep their
+existing behavior. This shortcut sends Windows + Tab on a Windows host.
+
+If you have saved edits in ZMK Studio, you can apply the shortcut there by setting
+Lower's Tab position to **Key Press: Tab + Left GUI**, then saving. This preserves
+your other Studio edits. A newly flashed keymap can otherwise be overridden by
+saved Studio settings; see [ZMK Studio](https://zmk.dev/docs/features/studio#keymap-changes).
+
 ## Build
 
 Push the gaming branch to build all five targets, or use the commands below to
